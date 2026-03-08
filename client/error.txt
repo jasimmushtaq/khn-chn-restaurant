@@ -1,0 +1,12 @@
+PAGE ERROR STR: ReferenceError: useEffect is not defined
+PAGE ERROR STACK: ReferenceError: useEffect is not defined
+    at OrdersPage (http://localhost:3000/src/pages/OrdersPage.jsx?t=1772961220766:18:3)
+    at react_stack_bottom_frame (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=2de8f343:18509:20)
+    at renderWithHooks (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=2de8f343:5654:24)
+    at updateFunctionComponent (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=2de8f343:7475:21)
+    at beginWork (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=2de8f343:8525:20)
+    at runWithFiberInDEV (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=2de8f343:997:72)
+    at performUnitOfWork (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=2de8f343:12561:98)
+    at workLoopSync (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=2de8f343:12424:43)
+    at renderRootSync (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=2de8f343:12408:13)
+    at performWorkOnRoot (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=2de8f343:11827:37)
