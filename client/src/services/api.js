@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-    baseURL: '/api',
+    baseURL: 'https://khn-chn-restaurant-backend.onrender.com',
 });
 
 // Add JWT token to every request (admin or delivery)
