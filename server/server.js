@@ -63,7 +63,12 @@ app.use((req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/restaurant_db';
+const MONGO_URI = process.env.MONGO_URI;
+
+if (!MONGO_URI) {
+    console.error('❌ FATAL ERROR: MONGO_URI is not defined in .env');
+    process.exit(1);
+}
 
 mongoose.connect(MONGO_URI)
     .then(() => {
