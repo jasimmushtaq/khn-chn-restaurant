@@ -18,6 +18,10 @@ const seedAdmin = require('./seed');
 
 const app = express();
 
+app.get('/', (req, res) => {
+    res.send('KHN CHN Backend is Live! Use /api/health for system status.');
+});
+
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.originalUrl}`);
     if (req.headers.authorization) console.log('Auth:', req.headers.authorization.slice(0, 15) + '...');
@@ -28,7 +32,7 @@ const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'],
+    origin: '*', // Allows access from any frontend during testing
     credentials: true,
 }));
 app.use(express.json());
