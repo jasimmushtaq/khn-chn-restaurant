@@ -1,13 +1,31 @@
 const Poster = require('../models/Poster');
 const fs = require('fs');
 const path = require('path');
+const upload = require('../middleware/uploadMiddleware');
+const { cloudinary } = upload;
 
-// Helper to delete old image
-const deleteImage = (imagePath) => {
-    if (imagePath) {
+// Helper to delete image (local or Cloudinary)
+const deleteImage = async (imagePath) => {
+    if (!imagePath) return;
+
+    if (imagePath.includes('cloudinary.com')) {
+        try {
+            const parts = imagePath.split('/');
+            const filename = parts[parts.length - 1];
+            const folder = parts[parts.length - 2];
+            const publicId = `${folder}/${filename.split('.')[0]}`;
+            await cloudinary.uploader.destroy(publicId);
+        } catch (error) {
+            console.error('Cloudinary delete error:', error);
+        }
+    } else {
         const fullPath = path.join(__dirname, '..', 'uploads', path.basename(imagePath));
         if (fs.existsSync(fullPath)) {
-            fs.unlinkSync(fullPath);
+            try {
+                fs.unlinkSync(fullPath);
+            } catch (error) {
+                console.error('Local file delete error:', error);
+            }
         }
     }
 };
@@ -55,7 +73,7 @@ const createPoster = async (req, res) => {
         const poster = await Poster.create({
             title,
             description: description || '',
-            image: `/uploads/${req.file.filename}`,
+            image: req.file.path,
         });
 
         res.status(201).json({ success: true, message: 'Poster created successfully', poster });
@@ -79,8 +97,8 @@ const updatePoster = async (req, res) => {
         const { title, description, isActive } = req.body;
 
         if (req.file) {
-            deleteImage(poster.image);
-            poster.image = `/uploads/${req.file.filename}`;
+            await deleteImage(poster.image);
+            poster.image = req.file.path;
         }
 
         poster.title = title || poster.title;
@@ -106,7 +124,7 @@ const deletePoster = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Poster not found' });
         }
 
-        deleteImage(poster.image);
+        await deleteImage(poster.image);
         await poster.deleteOne();
 
         res.status(200).json({ success: true, message: 'Poster deleted successfully' });

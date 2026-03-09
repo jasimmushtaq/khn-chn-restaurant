@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, Clock, ChefHat, Truck, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import { getOrderById, cancelOrder, getSettings } from '../services/api';
+import { getOrderById, cancelOrder, getSettings, BASE_URL } from '../services/api';
 import toast from 'react-hot-toast';
 
 const OrderTracking = () => {
@@ -23,7 +23,7 @@ const OrderTracking = () => {
         try {
             const { data } = await getSettings();
             if (data.settings && data.settings.cancelQrCode) {
-                setQrCodeUrl(data.settings.cancelQrCode.startsWith('/uploads') ? `http://localhost:5000${data.settings.cancelQrCode}` : data.settings.cancelQrCode);
+                setQrCodeUrl(data.settings.cancelQrCode.startsWith('/uploads') ? `${BASE_URL}${data.settings.cancelQrCode}` : data.settings.cancelQrCode);
             }
         } catch (err) {
             console.error("Failed to fetch settings", err);

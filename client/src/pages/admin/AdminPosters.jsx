@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Plus, Pencil, Trash2, X, Upload, AlertCircle, Eye, EyeOff } from 'lucide-react';
-import { getAllPostersAdmin, createPoster, updatePoster, deletePoster } from '../../services/api';
+import { getAllPostersAdmin, createPoster, updatePoster, deletePoster, BASE_URL } from '../../services/api';
 import toast from 'react-hot-toast';
 
 const initialForm = { title: '', description: '', isActive: true };
@@ -168,7 +168,7 @@ const AdminPosters = () => {
                             {/* Image */}
                             <div className="relative aspect-video overflow-hidden">
                                 <img
-                                    src={poster.image}
+                                    src={poster.image?.startsWith('http') ? poster.image : `${BASE_URL}${poster.image}`}
                                     alt={poster.title}
                                     className="w-full h-full object-cover"
                                 />
@@ -176,8 +176,8 @@ const AdminPosters = () => {
                                 {/* Active badge */}
                                 <div className="absolute top-3 right-3">
                                     <span className={`px-2 py-1 text-xs rounded-full font-medium ${poster.isActive
-                                            ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                                            : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                                        ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                        : 'bg-red-500/20 text-red-400 border border-red-500/30'
                                         }`}>
                                         {poster.isActive ? '● Active' : '● Inactive'}
                                     </span>
@@ -199,8 +199,8 @@ const AdminPosters = () => {
                                     <button
                                         onClick={() => handleToggleActive(poster)}
                                         className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium border transition-all ${poster.isActive
-                                                ? 'border-red-500/20 text-red-400 hover:bg-red-500/10'
-                                                : 'border-green-500/20 text-green-400 hover:bg-green-500/10'
+                                            ? 'border-red-500/20 text-red-400 hover:bg-red-500/10'
+                                            : 'border-green-500/20 text-green-400 hover:bg-green-500/10'
                                             }`}
                                         title={poster.isActive ? 'Deactivate' : 'Activate'}
                                     >
@@ -270,7 +270,11 @@ const AdminPosters = () => {
                                 >
                                     {imagePreview ? (
                                         <div className="relative aspect-video">
-                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                            <img
+                                                src={imagePreview?.startsWith('blob:') || imagePreview?.startsWith('http') ? imagePreview : `${BASE_URL}${imagePreview}`}
+                                                alt="Preview"
+                                                className="w-full h-full object-cover"
+                                            />
                                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                                                 <p className="text-white text-sm font-medium">Click to change image</p>
                                             </div>

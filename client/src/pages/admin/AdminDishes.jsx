@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Plus, Pencil, Trash2, X, Upload, Search, AlertCircle } from 'lucide-react';
-import { getAllDishes, createDish, updateDish, deleteDish } from '../../services/api';
+import { getAllDishes, createDish, updateDish, deleteDish, BASE_URL } from '../../services/api';
 import toast from 'react-hot-toast';
 
 const CATEGORIES = [
@@ -201,7 +201,7 @@ const AdminDishes = () => {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <img
-                                                    src={dish.image}
+                                                    src={dish.image?.startsWith('http') ? dish.image : `${BASE_URL}${dish.image}`}
                                                     alt={dish.name}
                                                     className="w-12 h-12 rounded-lg object-cover border border-[rgba(200,150,62,0.2)] flex-shrink-0"
                                                 />
@@ -297,7 +297,11 @@ const AdminDishes = () => {
                                 >
                                     {imagePreview ? (
                                         <div className="relative aspect-video">
-                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                            <img
+                                                src={imagePreview?.startsWith('blob:') || imagePreview?.startsWith('http') ? imagePreview : `${BASE_URL}${imagePreview}`}
+                                                alt="Preview"
+                                                className="w-full h-full object-cover"
+                                            />
                                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                                                 <p className="text-white text-sm font-medium">Click to change image</p>
                                             </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Tag, Sparkles } from 'lucide-react';
-import { getAllPosters } from '../services/api';
+import { getAllPosters, BASE_URL } from '../services/api';
 
 const PromotionsPage = () => {
     const [posters, setPosters] = useState([]);
@@ -68,7 +68,7 @@ const PromotionsPage = () => {
                                 {posters.map((poster) => (
                                     <div key={poster._id} className="min-w-full relative">
                                         <img
-                                            src={poster.image}
+                                            src={poster.image?.startsWith('http') ? poster.image : `${BASE_URL}${poster.image}`}
                                             alt={poster.title}
                                             className="w-full aspect-[16/7] object-cover"
                                         />
@@ -119,7 +119,7 @@ const PromotionsPage = () => {
                                         >
                                             <div className="aspect-video relative overflow-hidden">
                                                 <img
-                                                    src={poster.image}
+                                                    src={poster.image?.startsWith('http') ? poster.image : `${BASE_URL}${poster.image}`}
                                                     alt={poster.title}
                                                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                                                 />

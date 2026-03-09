@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getSettings, updateSettings } from '../../services/api';
+import { getSettings, updateSettings, BASE_URL } from '../../services/api';
 import toast from 'react-hot-toast';
 import { Settings as SettingsIcon, Upload, CheckCircle } from 'lucide-react';
 
@@ -95,7 +95,7 @@ const AdminSettings = () => {
 
                         <div className="flex flex-col items-center justify-center p-6 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl hover:border-red-300 transition-colors group relative overflow-hidden">
                             {orderQrPreview ? (
-                                <img src={orderQrPreview} alt="Order QR Preview" className="w-48 h-48 object-contain mb-4 rounded-xl mix-blend-multiply" />
+                                <img src={orderQrPreview?.startsWith('blob:') || orderQrPreview?.startsWith('http') ? orderQrPreview : `${BASE_URL}${orderQrPreview}`} alt="Order QR Preview" className="w-48 h-48 object-contain mb-4 rounded-xl mix-blend-multiply" />
                             ) : (
                                 <div className="w-48 h-48 bg-gray-100 rounded-xl mb-4 flex items-center justify-center text-gray-400 font-medium">
                                     No QR set
@@ -117,7 +117,7 @@ const AdminSettings = () => {
 
                         <div className="flex flex-col items-center justify-center p-6 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl hover:border-red-300 transition-colors group relative overflow-hidden">
                             {cancelQrPreview ? (
-                                <img src={cancelQrPreview} alt="Cancellation QR Preview" className="w-48 h-48 object-contain mb-4 rounded-xl mix-blend-multiply" />
+                                <img src={cancelQrPreview?.startsWith('blob:') || cancelQrPreview?.startsWith('http') ? cancelQrPreview : `${BASE_URL}${cancelQrPreview}`} alt="Cancellation QR Preview" className="w-48 h-48 object-contain mb-4 rounded-xl mix-blend-multiply" />
                             ) : (
                                 <div className="w-48 h-48 bg-gray-100 rounded-xl mb-4 flex items-center justify-center text-gray-400 font-medium">
                                     No QR set

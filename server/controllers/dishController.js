@@ -1,13 +1,37 @@
 const Dish = require('../models/Dish');
 const fs = require('fs');
 const path = require('path');
+const upload = require('../middleware/uploadMiddleware'); // Import upload to access cloudinary
+const { cloudinary } = upload;
 
-// Helper to delete old image
-const deleteImage = (imagePath) => {
-    if (imagePath) {
+// Helper to delete image (local or Cloudinary)
+const deleteImage = async (imagePath) => {
+    if (!imagePath) return;
+
+    // Check if it's a Cloudinary URL
+    if (imagePath.includes('cloudinary.com')) {
+        try {
+            // Extract public_id from URL
+            // Example: https://res.cloudinary.com/cloudname/image/upload/v12345/folder/public_id.jpg
+            const parts = imagePath.split('/');
+            const filename = parts[parts.length - 1]; // public_id.jpg
+            const folder = parts[parts.length - 2]; // folder (if exists)
+
+            // Getting public_id without extension
+            const publicId = `${folder}/${filename.split('.')[0]}`;
+            await cloudinary.uploader.destroy(publicId);
+        } catch (error) {
+            console.error('Cloudinary delete error:', error);
+        }
+    } else {
+        // Local delete
         const fullPath = path.join(__dirname, '..', 'uploads', path.basename(imagePath));
         if (fs.existsSync(fullPath)) {
-            fs.unlinkSync(fullPath);
+            try {
+                fs.unlinkSync(fullPath);
+            } catch (error) {
+                console.error('Local file delete error:', error);
+            }
         }
     }
 };
@@ -64,7 +88,7 @@ const createDish = async (req, res) => {
             description,
             price: parseFloat(price),
             category: category || 'Main Course',
-            image: `/uploads/${req.file.filename}`,
+            image: req.file.path, // Store the Cloudinary URL or local path
         });
 
         res.status(201).json({ success: true, message: 'Dish created successfully', dish });
@@ -88,8 +112,8 @@ const updateDish = async (req, res) => {
         const { name, description, price, category, isAvailable } = req.body;
 
         if (req.file) {
-            deleteImage(dish.image);
-            dish.image = `/uploads/${req.file.filename}`;
+            await deleteImage(dish.image);
+            dish.image = req.file.path;
         }
 
         dish.name = name || dish.name;
@@ -117,7 +141,7 @@ const deleteDish = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Dish not found' });
         }
 
-        deleteImage(dish.image);
+        await deleteImage(dish.image);
         await dish.deleteOne();
 
         res.status(200).json({ success: true, message: 'Dish deleted successfully' });

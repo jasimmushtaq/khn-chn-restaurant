@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Trash2, Plus, Minus, ArrowLeft, CheckCircle, CreditCard, User, MapPin, Phone, Banknote } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import { createOrder, getSettings } from '../services/api';
+import { createOrder, getSettings, BASE_URL } from '../services/api';
 import toast from 'react-hot-toast';
 
 const OrdersPage = () => {
@@ -20,7 +20,7 @@ const OrdersPage = () => {
             try {
                 const { data } = await getSettings();
                 if (data.settings && data.settings.orderQrCode) {
-                    setQrCodeUrl(data.settings.orderQrCode.startsWith('/uploads') ? `http://localhost:5000${data.settings.orderQrCode}` : data.settings.orderQrCode);
+                    setQrCodeUrl(data.settings.orderQrCode.startsWith('/uploads') ? `${BASE_URL}${data.settings.orderQrCode}` : data.settings.orderQrCode);
                 }
             } catch (err) {
                 console.error("Failed to fetch settings", err);
@@ -178,7 +178,7 @@ const OrdersPage = () => {
                                     {cartItems.map((item) => (
                                         <div key={item._id} className="flex gap-4">
                                             <div className="relative w-24 h-24 rounded-2xl overflow-hidden shrink-0 bg-gray-50 border border-gray-100">
-                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                <img src={item.image?.startsWith('http') ? item.image : `${BASE_URL}${item.image}`} alt={item.name} className="w-full h-full object-cover" />
                                             </div>
                                             <div className="flex-1 min-w-0 flex flex-col pt-1">
                                                 <div className="flex justify-between items-start gap-4 mb-2">
