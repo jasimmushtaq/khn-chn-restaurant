@@ -7,7 +7,11 @@ const AdminDeliveryBoys = () => {
     const [deliveryBoys, setDeliveryBoys] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editingId, setEditingId] = useState(null);
-    const [editForm, setEditForm] = useState({ email: '', password: '' });
+    const [editForm, setEditForm] = useState({ 
+        email: '', password: '', name: '', phone: '',
+        vehicleType: '', plate: '', photoUrl: '', idVerified: false, bgChecked: false,
+        assignedArea: ''
+    });
 
     useEffect(() => {
         fetchDeliveryBoys();
@@ -26,7 +30,13 @@ const AdminDeliveryBoys = () => {
 
     const handleEditStart = (boy) => {
         setEditingId(boy._id);
-        setEditForm({ email: boy.email, password: '' });
+        setEditForm({ 
+            email: boy.email, 
+            password: '', 
+            name: boy.name, 
+            phone: boy.phone,
+            assignedArea: boy.assignedArea || ''
+        });
     };
 
     const handleUpdate = async (e) => {
@@ -72,6 +82,7 @@ const AdminDeliveryBoys = () => {
                                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Name</th>
                                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Email</th>
                                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Phone</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Area</th>
                                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Actions</th>
                             </tr>
                         </thead>
@@ -115,6 +126,24 @@ const AdminDeliveryBoys = () => {
                                     </td>
                                     <td className="px-6 py-5">
                                         <span className="text-gray-600 font-medium">{boy.phone}</span>
+                                    </td>
+                                    <td className="px-6 py-5">
+                                        {editingId === boy._id ? (
+                                            <input
+                                                type="text"
+                                                placeholder="Assign Area"
+                                                value={editForm.assignedArea}
+                                                onChange={(e) => setEditForm({ ...editForm, assignedArea: e.target.value })}
+                                                className="bg-gray-50 border-none rounded-lg px-3 py-2 text-sm font-medium w-full focus:ring-2 focus:ring-red-100"
+                                            />
+                                        ) : (
+                                            <div className="flex flex-col">
+                                                <span className="text-gray-600 font-medium">{boy.assignedArea || 'General'}</span>
+                                                {boy.isBusy && (
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-orange-500 bg-orange-50 px-2 py-0.5 rounded-full w-fit mt-1">Busy</span>
+                                                )}
+                                            </div>
+                                        )}
                                     </td>
                                     <td className="px-6 py-5">
                                         {editingId === boy._id ? (

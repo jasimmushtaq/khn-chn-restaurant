@@ -49,6 +49,9 @@ exports.updateSettings = async (req, res) => {
             settings = new Settings({});
         }
 
+        if (req.body.upiId) settings.upiId = req.body.upiId;
+        if (req.body.upiName) settings.upiName = req.body.upiName;
+
         if (req.files) {
             if (req.files.orderQrCode && req.files.orderQrCode[0]) {
                 await deleteImage(settings.orderQrCode);

@@ -41,6 +41,7 @@ const Footer = () => {
                                 { label: 'Track Order', to: '/tracker' },
                                 { label: 'Leave Feedback', to: '/feedback' },
                                 { label: 'Contact Us', to: '/' },
+                                { label: 'Join as Delivery Partner', to: '/delivery/login' },
                             ].map(link => (
                                 <li key={link.label} className="shadow-none">
                                     <Link to={link.to} className="text-gray-500 hover:text-[#E53935] font-medium transition-colors">{link.label}</Link>

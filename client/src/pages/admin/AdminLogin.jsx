@@ -60,7 +60,7 @@ const AdminLogin = () => {
                         <h1 className="text-3xl font-bold text-white font-serif mb-1">
                             Admin <span className="gold-text">Portal</span>
                         </h1>
-                        <p className="text-[#9ca3af] text-sm">Saveur Restaurant Management</p>
+                        <p className="text-[#9ca3af] text-sm">KH'N CH'N Restaurant Management</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-5">

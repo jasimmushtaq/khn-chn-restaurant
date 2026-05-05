@@ -1,18 +1,30 @@
 import { useState, useEffect } from 'react';
 import { ShoppingBag, Truck, CheckCircle, Clock, User, Phone, MapPin, X, Receipt, ShoppingCart, Ban, AlertCircle } from 'lucide-react';
-import { getAllOrders, updateOrderStatus, adminCancelOrder } from '../../services/api';
+import { getAllOrders, updateOrderStatus, adminCancelOrder, getAllDeliveryBoys } from '../../services/api';
 import toast from 'react-hot-toast';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
+    const [deliveryBoys, setDeliveryBoys] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [selectedBoyId, setSelectedBoyId] = useState('');
     const [cancelReason, setCancelReason] = useState('');
     const [isCancelling, setIsCancelling] = useState(false);
 
     useEffect(() => {
         fetchOrders();
+        fetchDeliveryBoys();
     }, []);
+
+    const fetchDeliveryBoys = async () => {
+        try {
+            const { data } = await getAllDeliveryBoys();
+            setDeliveryBoys(data.boys || []);
+        } catch (e) {
+            console.error('Failed to load delivery boys', e);
+        }
+    };
 
     const fetchOrders = async () => {
         try {
@@ -25,14 +37,15 @@ const AdminOrders = () => {
         }
     };
 
-    const handleStatusChange = async (id, newStatus) => {
+    const handleStatusChange = async (id, newStatus, boyId = null) => {
         try {
-            await updateOrderStatus(id, newStatus);
+            await updateOrderStatus(id, newStatus, boyId);
             toast.success('Order status updated!');
             if (selectedOrder && selectedOrder._id === id) {
                 setSelectedOrder({ ...selectedOrder, status: newStatus });
             }
             fetchOrders();
+            setSelectedBoyId('');
         } catch (err) {
             toast.error('Failed to update status');
         }
@@ -88,6 +101,7 @@ const AdminOrders = () => {
                                 <th className="px-8 py-5">Order ID</th>
                                 <th className="px-8 py-5">Customer</th>
                                 <th className="px-8 py-5">Value</th>
+                                <th className="px-8 py-5">Area</th>
                                 <th className="px-8 py-5">Status</th>
                                 <th className="px-8 py-5 text-right">Actions</th>
                             </tr>
@@ -119,9 +133,17 @@ const AdminOrders = () => {
                                     </td>
                                     <td className="px-8 py-6">
                                         <div className="font-black text-[#E53935] text-lg">₹{order.totalAmount.toFixed(0)}</div>
-                                        <div className="text-[9px] font-black tracking-tighter uppercase text-gray-400 px-1.5 py-0.5 bg-gray-100 rounded inline-block mt-1">
-                                            {order.transactionId === 'CASH ON DELIVERY' ? 'COD' : 'Prepaid'}
+                                        <div className="flex flex-col gap-1 mt-1">
+                                            <div className="text-[9px] font-black tracking-tighter uppercase text-gray-400 px-1.5 py-0.5 bg-gray-100 rounded inline-block w-fit">
+                                                {order.paymentMethod || (order.transactionId === 'CASH ON DELIVERY' ? 'COD' : 'Online')}
+                                            </div>
+                                            <div className={`text-[8px] font-black tracking-tighter uppercase px-1.5 py-0.5 rounded inline-block w-fit ${order.paymentStatus === 'paid' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}`}>
+                                                {order.paymentStatus || 'Pending'}
+                                            </div>
                                         </div>
+                                    </td>
+                                    <td className="px-8 py-6">
+                                        <div className="font-bold text-gray-700">{order.area || 'General'}</div>
                                     </td>
                                     <td className="px-8 py-6">
                                         <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black border uppercase tracking-widest ${order.status === 'received' ? 'bg-orange-50 text-orange-600 border-orange-100' :
@@ -204,8 +226,34 @@ const AdminOrders = () => {
                                                 <MapPin size={18} />
                                             </div>
                                             <div>
+                                                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Delivery Area</h4>
+                                                <p className="font-bold text-gray-900">{selectedOrder.area || 'General'}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-4 p-4 rounded-3xl bg-gray-50 border border-gray-100">
+                                            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-gray-400 border border-gray-100">
+                                                <MapPin size={18} />
+                                            </div>
+                                            <div>
                                                 <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Address</h4>
                                                 <p className="text-sm font-medium text-gray-600 leading-relaxed">{selectedOrder.customer.address}</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Delivery Partner Info */}
+                                        <div className="flex items-start gap-4 p-4 rounded-3xl bg-gray-50 border border-dotted border-gray-300">
+                                            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#E53935] border border-gray-100">
+                                                <Truck size={18} />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Assignee</h4>
+                                                <p className="font-bold text-gray-900">
+                                                    {selectedOrder.deliveryPartner ? selectedOrder.deliveryPartner.name : 'Unassigned'}
+                                                </p>
+                                                {selectedOrder.deliveryPartner && (
+                                                    <span className="text-[9px] font-black text-green-600 uppercase">Verified Profile Attached</span>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -215,22 +263,52 @@ const AdminOrders = () => {
                                             <>
                                                 <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 text-center">Update Order Status</h4>
                                                 <div className="grid grid-cols-2 gap-3 mb-6">
-                                                    <select
-                                                        value={selectedOrder.status}
-                                                        onChange={(e) => handleStatusChange(selectedOrder._id, e.target.value)}
-                                                        className="col-span-1 bg-gray-50 border-none px-4 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest focus:ring-2 focus:ring-red-100 transition-all appearance-none cursor-pointer"
-                                                    >
-                                                        <option value="received">Received</option>
-                                                        <option value="preparing">Preparing</option>
-                                                        <option value="delivering">Delivering</option>
-                                                    </select>
-                                                    <button
-                                                        onClick={() => handleStatusChange(selectedOrder._id, 'delivered')}
-                                                        className="col-span-1 bg-[#E53935] hover:bg-black text-white px-4 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-red-100 active:scale-95"
-                                                    >
-                                                        Deliver Now
-                                                    </button>
-                                                </div>
+                                                     <select
+                                                         value={selectedOrder.status}
+                                                         onChange={(e) => handleStatusChange(selectedOrder._id, e.target.value)}
+                                                         className="col-span-1 bg-gray-50 border-none px-4 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest focus:ring-2 focus:ring-red-100 transition-all appearance-none cursor-pointer"
+                                                     >
+                                                         <option value="received">Received</option>
+                                                         <option value="preparing">Preparing</option>
+                                                         <option value="delivering">Delivering</option>
+                                                     </select>
+                                                     <button
+                                                         onClick={() => handleStatusChange(selectedOrder._id, 'delivered')}
+                                                         className="col-span-1 bg-[#E53935] hover:bg-black text-white px-4 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-red-100 active:scale-95"
+                                                     >
+                                                         Deliver Now
+                                                     </button>
+                                                 </div>
+
+                                                 {!selectedOrder.deliveryPartner && (
+                                                     <div className="p-5 bg-blue-50/50 rounded-3xl border border-blue-100 mb-6">
+                                                         <div className="flex items-center gap-2 mb-3">
+                                                             <Truck size={14} className="text-blue-500" />
+                                                             <h4 className="text-[10px] font-black text-blue-900 uppercase tracking-widest">Assign Delivery Partner</h4>
+                                                         </div>
+                                                         <div className="flex gap-2">
+                                                             <select
+                                                                 value={selectedBoyId}
+                                                                 onChange={(e) => setSelectedBoyId(e.target.value)}
+                                                                 className="flex-1 bg-white border border-blue-100 px-4 py-3 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-blue-200 outline-none"
+                                                             >
+                                                                 <option value="">Select a partner...</option>
+                                                                 {deliveryBoys.map(boy => (
+                                                                     <option key={boy._id} value={boy._id}>
+                                                                         {boy.name} {!boy.photoUrl ? '(No Photo)' : ''}
+                                                                     </option>
+                                                                 ))}
+                                                             </select>
+                                                             <button
+                                                                 onClick={() => handleStatusChange(selectedOrder._id, selectedOrder.status, selectedBoyId)}
+                                                                 disabled={!selectedBoyId}
+                                                                 className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+                                                             >
+                                                                 Assign
+                                                             </button>
+                                                         </div>
+                                                     </div>
+                                                 )}
 
                                                 <div className="p-5 bg-red-50/50 rounded-3xl border border-red-100">
                                                     <div className="flex items-center gap-2 mb-3">
@@ -300,10 +378,16 @@ const AdminOrders = () => {
                                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Grand Total</span>
                                         <span className="text-2xl font-black text-[#E53935]">₹{selectedOrder.totalAmount.toFixed(0)}</span>
                                     </div>
-                                    <div className="flex justify-end mt-2">
-                                        <span className={`text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest ${selectedOrder.transactionId === 'CASH ON DELIVERY' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>
-                                            {selectedOrder.transactionId === 'CASH ON DELIVERY' ? 'Collect Cash' : 'Paid Online'}
+                                    <div className="flex flex-col items-end mt-2 gap-1">
+                                        <span className={`text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest ${selectedOrder.paymentMethod === 'COD' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>
+                                            {selectedOrder.paymentMethod === 'COD' ? 'Cash on Delivery' : 'Paid Online'}
                                         </span>
+                                        <span className={`text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest ${selectedOrder.paymentStatus === 'paid' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-600'}`}>
+                                            Status: {selectedOrder.paymentStatus || 'Pending'}
+                                        </span>
+                                        {selectedOrder.transactionId && selectedOrder.transactionId !== 'CASH ON DELIVERY' && (
+                                            <span className="text-[8px] text-gray-400 font-bold">TX: {selectedOrder.transactionId}</span>
+                                        )}
                                     </div>
                                 </div>
                             </div>

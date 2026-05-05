@@ -14,6 +14,8 @@ const reviewRoutes = require('./routes/reviewRoutes');
 const { protect } = require('./middleware/authMiddleware');
 const settingsRoutes = require('./routes/settingsRoutes');
 const deliveryRoutes = require('./routes/deliveryRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const userRoutes = require('./routes/userRoutes');
 const seedAdmin = require('./seed');
 
 const app = express();
@@ -49,6 +51,8 @@ const deliveryAdminRoutes = require('./routes/deliveryAdminRoutes');
 app.use('/api/admin/deliveryboys', protect, deliveryAdminRoutes);
 app.use('/api/delivery', deliveryRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/payment', paymentRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ success: true, message: 'KHN CHN API is running!', timestamp: new Date().toISOString() });
@@ -78,6 +82,10 @@ mongoose.connect(MONGO_URI)
     .then(() => {
         console.log('✅ MongoDB connected');
         seedAdmin();
-        app.listen(PORT, () => console.log(`🚀 KHN CHN server on http://localhost:${PORT}`));
+        if (process.env.NODE_ENV !== 'production') {
+            app.listen(PORT, () => console.log(`🚀 KHN CHN server on http://localhost:${PORT}`));
+        }
     })
     .catch((err) => { console.error('❌ MongoDB failed:', err.message); process.exit(1); });
+
+module.exports = app;

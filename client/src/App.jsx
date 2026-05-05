@@ -2,7 +2,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { UserProvider } from './context/UserContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import UserProtectedRoute from './components/UserProtectedRoute';
 
 // Layout
 import Navbar from './components/Navbar';
@@ -17,9 +19,10 @@ import OrderTracking from './pages/OrderTracking';
 import ReservationPage from './pages/ReservationPage';
 import FeedbackPage from './pages/FeedbackPage';
 
-// Admin Auth
-import AdminLogin from './pages/admin/AdminLogin';
-import AdminRegister from './pages/admin/AdminRegister';
+// Auth Portal (Unified)
+import UnifiedAuth from './pages/UnifiedAuth';
+import ProfilePage from './pages/ProfilePage';
+import CustomerDashboard from './pages/CustomerDashboard';
 
 // Admin Portal
 import AdminLayout from './pages/admin/AdminLayout';
@@ -36,7 +39,11 @@ import AdminStaff from './pages/admin/AdminStaff';
 
 // Delivery Portal
 import DeliveryLogin from './pages/delivery/DeliveryLogin';
+import DeliveryDashboard from './pages/delivery/DeliveryDashboard';
 import DeliveryOrders from './pages/delivery/DeliveryOrders';
+import ActiveOrder from './pages/delivery/ActiveOrder';
+import DeliveryHistory from './pages/delivery/DeliveryHistory';
+import DeliveryProfile from './pages/delivery/DeliveryProfile';
 import DeliveryProtectedRoute from './components/DeliveryProtectedRoute';
 
 const PublicPage = ({ children, noFooter }) => (
@@ -50,72 +57,111 @@ const PublicPage = ({ children, noFooter }) => (
 function App() {
   return (
     <AuthProvider>
-      <CartProvider>
-        <Router>
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 3500,
-              style: {
-                background: '#fff',
-                color: '#1f2937',
-                border: '1px solid #e5e7eb',
-                borderRadius: '16px',
-                fontSize: '14px',
-                fontWeight: '600',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-              },
-            }}
-          />
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<PublicPage><HomePage /></PublicPage>} />
-            <Route path="/menu" element={<PublicPage><MenuPage /></PublicPage>} />
-            <Route path="/promotions" element={<PublicPage><PromotionsPage /></PublicPage>} />
-            <Route path="/orders" element={<PublicPage noFooter><OrdersPage /></PublicPage>} />
-            <Route path="/tracker" element={<PublicPage noFooter><OrderTracking /></PublicPage>} />
-            <Route path="/reservation" element={<PublicPage noFooter><ReservationPage /></PublicPage>} />
-            <Route path="/feedback" element={<PublicPage noFooter><FeedbackPage /></PublicPage>} />
-
-            {/* Admin Auth Routes */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/register" element={<AdminRegister />} />
-
-            {/* Admin Protected Routes */}
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute>
-                  <AdminLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<AdminDashboard />} />
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="dishes" element={<AdminDishes />} />
-              <Route path="posters" element={<AdminPosters />} />
-              <Route path="orders" element={<AdminOrders />} />
-              <Route path="reservations" element={<AdminReservations />} />
-              <Route path="feedback" element={<AdminFeedback />} />
-              <Route path="settings" element={<ProtectedRoute requireMainAdmin><AdminSettings /></ProtectedRoute>} />
-              <Route path="delivery-boys" element={<ProtectedRoute requireMainAdmin><AdminDeliveryBoys /></ProtectedRoute>} />
-              <Route path="requests" element={<ProtectedRoute requireMainAdmin><AdminRequests /></ProtectedRoute>} />
-              <Route path="staff" element={<ProtectedRoute requireMainAdmin><AdminStaff /></ProtectedRoute>} />
-            </Route>
-
-            {/* Delivery Routes */}
-            <Route path="/delivery/login" element={<DeliveryLogin />} />
-            <Route
-              path="/delivery/orders"
-              element={
-                <DeliveryProtectedRoute>
-                  <DeliveryOrders />
-                </DeliveryProtectedRoute>
-              }
+      <UserProvider>
+        <CartProvider>
+          <Router>
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 3500,
+                style: {
+                  background: '#fff',
+                  color: '#1f2937',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '16px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                },
+              }}
             />
-          </Routes>
-        </Router>
-      </CartProvider>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<PublicPage><HomePage /></PublicPage>} />
+              <Route path="/menu" element={<PublicPage><MenuPage /></PublicPage>} />
+              <Route path="/promotions" element={<PublicPage><PromotionsPage /></PublicPage>} />
+              <Route path="/orders" element={<PublicPage noFooter><OrdersPage /></PublicPage>} />
+              <Route path="/tracker" element={<PublicPage noFooter><OrderTracking /></PublicPage>} />
+              <Route path="/reservation" element={<PublicPage noFooter><ReservationPage /></PublicPage>} />
+              <Route path="/feedback" element={<PublicPage noFooter><FeedbackPage /></PublicPage>} />
+
+              {/* Unified Auth Routes */}
+              <Route path="/login" element={<PublicPage noFooter><UnifiedAuth /></PublicPage>} />
+              <Route path="/register" element={<PublicPage noFooter><UnifiedAuth /></PublicPage>} />
+              <Route path="/admin/login" element={<UnifiedAuth />} />
+              <Route path="/admin/register" element={<UnifiedAuth />} />
+
+              <Route path="/profile" element={<UserProtectedRoute><PublicPage noFooter><ProfilePage /></PublicPage></UserProtectedRoute>} />
+              <Route path="/dashboard" element={<UserProtectedRoute><PublicPage noFooter><CustomerDashboard /></PublicPage></UserProtectedRoute>} />
+
+              {/* Admin Protected Routes */}
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute>
+                    <AdminLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<AdminDashboard />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="dishes" element={<AdminDishes />} />
+                <Route path="posters" element={<AdminPosters />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="reservations" element={<AdminReservations />} />
+                <Route path="feedback" element={<AdminFeedback />} />
+                <Route path="settings" element={<ProtectedRoute requireMainAdmin><AdminSettings /></ProtectedRoute>} />
+                <Route path="delivery-boys" element={<ProtectedRoute requireMainAdmin><AdminDeliveryBoys /></ProtectedRoute>} />
+                <Route path="requests" element={<ProtectedRoute requireMainAdmin><AdminRequests /></ProtectedRoute>} />
+                <Route path="staff" element={<ProtectedRoute requireMainAdmin><AdminStaff /></ProtectedRoute>} />
+              </Route>
+
+              {/* Delivery Routes */}
+              <Route path="/delivery/login" element={<DeliveryLogin />} />
+              <Route
+                path="/delivery/dashboard"
+                element={
+                  <DeliveryProtectedRoute>
+                    <DeliveryDashboard />
+                  </DeliveryProtectedRoute>
+                }
+              />
+              <Route
+                path="/delivery/active-order/:orderId"
+                element={
+                  <DeliveryProtectedRoute>
+                    <ActiveOrder />
+                  </DeliveryProtectedRoute>
+                }
+              />
+              <Route
+                path="/delivery/history"
+                element={
+                  <DeliveryProtectedRoute>
+                    <DeliveryHistory />
+                  </DeliveryProtectedRoute>
+                }
+              />
+              <Route
+                path="/delivery/orders"
+                element={
+                  <DeliveryProtectedRoute>
+                    <DeliveryOrders />
+                  </DeliveryProtectedRoute>
+                }
+              />
+              <Route
+                path="/delivery/profile"
+                element={
+                  <DeliveryProtectedRoute>
+                    <DeliveryProfile />
+                  </DeliveryProtectedRoute>
+                }
+              />
+            </Routes>
+          </Router>
+        </CartProvider>
+      </UserProvider>
     </AuthProvider>
   );
 }

@@ -28,6 +28,27 @@ const deliveryBoySchema = new mongoose.Schema({
     isRegisteredByAdmin: {
         type: Boolean,
         default: false,
+    },
+    photoUrl: { type: String },
+    rating: { type: Number, default: 4.5 },
+    totalDeliveries: { type: Number, default: 0 },
+    idVerified: { type: Boolean, default: false },
+    bgChecked: { type: Boolean, default: false },
+    vehicleType: { type: String },
+    plate: { type: String },
+    assignedArea: { type: String, default: 'General' },
+    workStatus: {
+        type: String,
+        enum: ['ACTIVE', 'BUSY', 'GOING_FOR_DROP', 'OFFLINE'],
+        default: 'OFFLINE'
+    },
+    currentOrder: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Order'
+    },
+    lastStatusUpdate: {
+        type: Date,
+        default: Date.now
     }
 }, { timestamps: true });
 

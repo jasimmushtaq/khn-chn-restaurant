@@ -95,25 +95,27 @@ const OrderTracking = () => {
                 </div>
 
                 {/* Tracker Input */}
-                <div className="bg-white p-6 rounded-3xl border border-gray-100 mb-8 shadow-sm">
-                    <label className="block text-gray-700 font-bold mb-3">Enter your 24-character Order ID</label>
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <input
-                            type="text"
-                            placeholder="e.g. 64b1f..."
-                            value={orderId}
-                            onChange={(e) => setOrderId(e.target.value)}
-                            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#E53935] transition-all font-medium tracking-wide"
-                        />
-                        <button
-                            onClick={fetchOrderDetails}
-                            disabled={loading || !orderId}
-                            className="px-8 py-4 bg-[#E53935] text-white font-bold rounded-xl shadow-[0_8px_20px_rgba(229,57,53,0.25)] hover:shadow-[0_12px_24px_rgba(229,57,53,0.35)] hover:-translate-y-1 transition-all disabled:opacity-70 disabled:hover:translate-y-0"
-                        >
-                            {loading ? 'Tracking...' : 'Track Now'}
-                        </button>
+                {!order && (
+                    <div className="bg-white p-6 rounded-3xl border border-gray-100 mb-8 shadow-sm">
+                        <label className="block text-gray-700 font-bold mb-3">Enter your phone number or email</label>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <input
+                                type="text"
+                                placeholder="e.g. 9876543210 or user@example.com"
+                                value={orderId}
+                                onChange={(e) => setOrderId(e.target.value)}
+                                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#E53935] transition-all font-medium tracking-wide"
+                            />
+                            <button
+                                onClick={fetchOrderDetails}
+                                disabled={loading || !orderId}
+                                className="px-8 py-4 bg-[#E53935] text-white font-bold rounded-xl shadow-[0_8px_20px_rgba(229,57,53,0.25)] hover:shadow-[0_12px_24px_rgba(229,57,53,0.35)] hover:-translate-y-1 transition-all disabled:opacity-70 disabled:hover:translate-y-0"
+                            >
+                                {loading ? 'Tracking...' : 'Track Now'}
+                            </button>
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Live Output */}
                 {order && (
@@ -121,7 +123,7 @@ const OrderTracking = () => {
 
                         <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-10 pb-6 border-b border-gray-100 gap-4">
                             <div>
-                                <p className="text-gray-500 font-medium mb-1">Order #<span className="text-gray-900 font-bold">{order._id.slice(-8).toUpperCase()}</span></p>
+                                <p className="text-gray-900 font-bold mb-1 text-xl">Your Order</p>
                                 <p className="text-gray-400 text-sm">{new Date(order.createdAt).toLocaleString()}</p>
                             </div>
                             <div className="text-right">

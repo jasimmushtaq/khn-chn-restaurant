@@ -18,12 +18,24 @@ exports.getAllDeliveryBoys = async (req, res) => {
 // @access  Private (admin)
 exports.updateDeliveryBoy = async (req, res) => {
     try {
-        const { email, password, name, phone, isApproved } = req.body;
+        const { 
+            email, password, name, phone, isApproved, 
+            photoUrl, rating, totalDeliveries, idVerified, bgChecked, 
+            vehicleType, plate, assignedArea 
+        } = req.body;
         const update = {};
         if (email) update.email = email;
         if (name) update.name = name;
         if (phone) update.phone = phone;
+        if (assignedArea) update.assignedArea = assignedArea;
         if (typeof isApproved !== 'undefined') update.isApproved = isApproved;
+        if (photoUrl) update.photoUrl = photoUrl;
+        if (typeof rating !== 'undefined') update.rating = rating;
+        if (typeof totalDeliveries !== 'undefined') update.totalDeliveries = totalDeliveries;
+        if (typeof idVerified !== 'undefined') update.idVerified = idVerified;
+        if (typeof bgChecked !== 'undefined') update.bgChecked = bgChecked;
+        if (vehicleType) update.vehicleType = vehicleType;
+        if (plate) update.plate = plate;
 
         if (password) {
             const bcrypt = require('bcryptjs');

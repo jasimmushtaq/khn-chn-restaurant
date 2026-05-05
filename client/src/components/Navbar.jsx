@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingBag, UtensilsCrossed, User } from 'lucide-react';
+import { Menu, X, ShoppingBag, UtensilsCrossed, User, UserCircle, ShieldCheck, LogOut } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useUser } from '../context/UserContext';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
+    const { user, isUserAuthenticated, logout: userLogout } = useUser();
+    const { admin, logout: adminLogout } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const location = useLocation();
@@ -85,13 +89,56 @@ const Navbar = () => {
                             )}
                         </Link>
 
-                        {/* Admin Login mapping or Reserve Table depending on needs */}
-                        <Link
-                            to="/admin/login"
-                            className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-colors"
-                        >
-                            <User size={18} />
-                        </Link>
+                        {/* Account Access */}
+                        {isUserAuthenticated ? (
+                            <div className="flex items-center gap-2">
+                                <Link
+                                    to="/dashboard"
+                                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-50 text-[#E53935] border border-red-50 hover:bg-red-50 hover:border-red-100 transition-all font-bold group"
+                                >
+                                    <UserCircle size={20} className="group-hover:scale-110 transition-transform" />
+                                    <span className="max-w-[100px] truncate">{user.name}</span>
+                                </Link>
+                                <button
+                                    onClick={() => {
+                                        userLogout();
+                                        window.location.href = '/';
+                                    }}
+                                    className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                    title="Logout"
+                                >
+                                    <LogOut size={20} />
+                                </button>
+                            </div>
+                        ) : admin ? (
+                            <div className="flex items-center gap-2">
+                                <Link
+                                    to="/admin/dashboard"
+                                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 hover:bg-purple-100 transition-all font-bold group"
+                                >
+                                    <ShieldCheck size={20} className="group-hover:scale-110 transition-transform" />
+                                    <span>Dashboard</span>
+                                </Link>
+                                <button
+                                    onClick={() => {
+                                        adminLogout();
+                                        window.location.href = '/';
+                                    }}
+                                    className="p-2.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"
+                                    title="Logout"
+                                >
+                                    <LogOut size={20} />
+                                </button>
+                            </div>
+                        ) : (
+                            <Link
+                                to="/login"
+                                className="px-5 py-2.5 bg-[#E53935] text-white font-black rounded-xl shadow-lg shadow-red-500/20 hover:shadow-red-500/40 hover:bg-[#C62828] active:scale-95 transition-all text-sm flex items-center gap-2"
+                            >
+                                <User size={16} />
+                                Sign In
+                            </Link>
+                        )}
                     </div>
 
                     {/* Mobile menu button */}
@@ -132,12 +179,60 @@ const Navbar = () => {
                             {link.label}
                         </Link>
                     ))}
-                    <Link
-                        to="/admin/login"
-                        className="block px-4 py-3 rounded-xl font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                    >
-                        Admin Login
-                    </Link>
+                    {isUserAuthenticated ? (
+                        <div className="flex flex-col gap-2">
+                            <Link
+                                to="/dashboard"
+                                className="block px-4 py-3 rounded-xl font-bold text-[#E53935] bg-red-50"
+                            >
+                                My Dashboard ({user.name})
+                            </Link>
+                            <button
+                                onClick={() => {
+                                    userLogout();
+                                    window.location.href = '/';
+                                }}
+                                className="flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100"
+                            >
+                                <LogOut size={18} />
+                                Logout
+                            </button>
+                        </div>
+                    ) : admin ? (
+                        <div className="flex flex-col gap-2">
+                            <Link
+                                to="/admin/dashboard"
+                                className="block px-4 py-3 rounded-xl font-bold text-purple-600 bg-purple-50"
+                            >
+                                Admin Dashboard
+                            </Link>
+                            <button
+                                onClick={() => {
+                                    adminLogout();
+                                    window.location.href = '/';
+                                }}
+                                className="flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100"
+                            >
+                                <LogOut size={18} />
+                                Admin Logout
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            <Link
+                                to="/login"
+                                className="block px-4 py-3 rounded-xl font-bold text-white bg-[#E53935]"
+                            >
+                                Sign In / Register
+                            </Link>
+                            <Link
+                                to="/delivery/login"
+                                className="block px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100"
+                            >
+                                Delivery Portal
+                            </Link>
+                        </>
+                    )}
                 </div>
             </div>
         </nav>

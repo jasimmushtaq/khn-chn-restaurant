@@ -8,6 +8,14 @@ const settingsSchema = new mongoose.Schema({
     cancelQrCode: {
         type: String,
         default: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=payUPI://example&color=E53935&bgcolor=f9fafb'
+    },
+    upiId: {
+        type: String,
+        default: 'restaurant@upi'
+    },
+    upiName: {
+        type: String,
+        default: 'KHN CHN Restaurant'
     }
 }, { timestamps: true });
 
