@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ChevronRight, Star, Clock, MapPin, Search } from 'lucide-react';
 import { getAllDishes, getAllReviews } from '../services/api';
 import DishCard from '../components/DishCard';
+import SEO from '../components/SEO';
 
 const HomePage = () => {
     const [dishes, setDishes] = useState([]);
@@ -32,6 +33,10 @@ const HomePage = () => {
 
     return (
         <div className="min-h-screen bg-[#f8f9fa] pt-20">
+            <SEO 
+                title="Home | KH'N CH'N"
+                description="Experience the best and freshest food in town. Order your favorite dishes online with fast delivery."
+            />
 
             {/* ─── HERO SECTION ─── */}
             <section className="bg-white border-b border-gray-100 overflow-hidden">

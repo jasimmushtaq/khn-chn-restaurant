@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Tag, Sparkles } from 'lucide-react';
 import { getAllPosters, BASE_URL } from '../services/api';
+import SEO from '../components/SEO';
 
 const PromotionsPage = () => {
     const [posters, setPosters] = useState([]);
@@ -43,6 +44,10 @@ const PromotionsPage = () => {
 
     return (
         <div className="min-h-screen pt-20">
+            <SEO 
+                title="Special Promotions & Offers | KH'N CH'N"
+                description="Discover exclusive deals, limited-time offers, and seasonal specials at KH'N CH'N. Check out our latest promotions!"
+            />
             {/* Header */}
             <div className="bg-gradient-to-b from-[#1a1a2e] to-[#0d0d1a] py-20 text-center">
                 <div className="max-w-4xl mx-auto px-4">

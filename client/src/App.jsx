@@ -54,10 +54,13 @@ const PublicPage = ({ children, noFooter }) => (
   </>
 );
 
+import { HelmetProvider } from 'react-helmet-async';
+
 function App() {
   return (
-    <AuthProvider>
-      <UserProvider>
+    <HelmetProvider>
+      <AuthProvider>
+        <UserProvider>
         <CartProvider>
           <Router>
             <Toaster
@@ -162,7 +165,8 @@ function App() {
           </Router>
         </CartProvider>
       </UserProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </HelmetProvider>
   );
 }
 

@@ -3,6 +3,7 @@ import { Menu, Search, Filter } from 'lucide-react';
 import { getAllDishes } from '../services/api';
 import DishCard from '../components/DishCard';
 import { useLocation } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 const CATEGORIES = [
     'All', 'Starters', 'Main Course (Veg)', 'Main Course (Non Veg)', 'Chicken',
@@ -50,6 +51,10 @@ const MenuPage = () => {
 
     return (
         <div className="min-h-screen bg-[#f8f9fa] pt-24 pb-32">
+            <SEO 
+                title="Our Menu | Explore the Best Dishes"
+                description="Browse our extensive menu of Starters, Main Courses, Pizzas, Burgers, and Desserts. We serve the freshest ingredients for an unforgettable dining experience."
+            />
             <div className="max-w-7xl mx-auto px-5 sm:px-8">
 
                 {/* Header & Search */}
