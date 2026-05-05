@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.hostname.startsWith('192.168');
-export const BASE_URL = isLocal ? `http://${window.location.hostname}:5000` : 'https://khn-chn-restaurant-backend.onrender.com';
+export const BASE_URL = isLocal ? `http://${window.location.hostname}:5000` : 'https://server-sage-mu.vercel.app';
 
 const API = axios.create({
     baseURL: `${BASE_URL}/api`,
